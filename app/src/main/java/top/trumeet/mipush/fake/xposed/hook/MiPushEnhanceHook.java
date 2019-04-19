@@ -1,9 +1,7 @@
 package top.trumeet.mipush.fake.xposed.hook;
 
-import android.os.UserHandle;
 import android.util.Log;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,10 +21,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  * @date 2018/3/20
  */
 public class MiPushEnhanceHook implements IXposedHookLoadPackage {
-
-    public static final String FAKE_CONFIGURATION_PATH = "/data/misc/riru/modules/mipush_fake/packages/";
-    public static final String FAKE_CONFIGURATION_NAME_TEMPLATE = FAKE_CONFIGURATION_PATH + "%1$s.%2$s";
-    public static final String FAKE_CONFIGURATION_GLOBAL = FAKE_CONFIGURATION_PATH + "ALL";
 
 
     private static final String TAG = "MiPushEnhanceHook";
@@ -74,25 +68,6 @@ public class MiPushEnhanceHook implements IXposedHookLoadPackage {
         try {
             String packageName = lpparam.packageName;
 
-            try {
-
-                if (!new File(FAKE_CONFIGURATION_GLOBAL).exists()) {
-
-                    // TODO: Remove hidden api usage
-                    if (!new File(String.format(FAKE_CONFIGURATION_NAME_TEMPLATE,
-                            getUserHandleForUid(lpparam.appInfo.uid).hashCode(),
-                            packageName)).exists())
-                        // Skipped according user's settings
-                        return;
-
-                } else {
-                    Log.d(TAG, "using global fake config for " + packageName);
-                }
-
-            } catch (Throwable e) {
-                XposedBridge.log(TAG + ": get config: " + Log.getStackTraceString(e));
-            }
-
             if (inBlackList(packageName)) {
                 Log.d(TAG, "hit blacklist when fake build for " + packageName);
                 return;
@@ -118,7 +93,4 @@ public class MiPushEnhanceHook implements IXposedHookLoadPackage {
         }
     }
 
-    public static UserHandle getUserHandleForUid(int uid) {
-        return UserHandle.getUserHandleForUid(uid);
-    }
 }
